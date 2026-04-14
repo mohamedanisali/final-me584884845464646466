@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كتاب ذكريات دفعة 29</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: #1a0810;
+    color: #f5ede0;
+    min-height: 100vh;
+  }
+
+  /* ===== SCREEN UI ===== */
+  .screen-ui {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 999;
+    background: rgba(16,5,8,0.95);
+    backdrop-filter: blur(10px);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(212,175,55,0.2);
+  }
+
+  .ui-title {
+    font-family: 'Amiri', serif;
+    font-size: 1.2rem;
+    color: #d4af37;
+  }
+
+  .print-btn {
+    padding: 10px 28px;
+    background: linear-gradient(135deg, #7a1e3c, #c0365a);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(192,54,90,0.4);
+  }
+  .print-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(192,54,90,0.6);
+  }
+
+  .loading {
+    text-align: center;
+    padding: 120px 20px;
+    font-size: 1.2rem;
+    color: rgba(245,237,224,0.5);
+  }
+  .loading-spinner {
+    width: 50px; height: 50px;
+    border: 3px solid rgba(212,175,55,0.2);
+    border-top-color: #d4af37;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== BOOK PAGES ===== */
+  .book {
+    padding-top: 80px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .page {
+    width: 100%;
+    min-height: 1122px; /* A4 ratio */
+    position: relative;
+    margin-bottom: 24px;
+    background: #100508;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* ===== COVER PAGE ===== */
+  .cover {
+    background: radial-gradient(ellipse at 30% 20%, #2a0d18 0%, #0a0306 70%);
+    position: relative;
+  }
+
+  .cover-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .cover-orb1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(122,30,60,0.5) 0%, transparent 70%);
+    top: -100px; right: -100px;
+  }
+  .cover-orb2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
+    bottom: -100px; left: -100px;
+  }
+
+  .cover-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 60px 40px;
+  }
+
+  .cover-year {
+    font-family: 'Amiri', serif;
+    font-size: 9rem;
+    font-weight: 700;
+    line-height: 0.85;
+    background: linear-gradient(145deg, #f0d060 0%, #d4af37 40%, #b8960a 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 6px;
+    filter: drop-shadow(0 0 30px rgba(212,175,55,0.4));
+    margin-bottom: 30px;
+  }
+
+  .cover-line {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    margin: 0 auto 30px;
+  }
+
+  .cover-college {
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 5px;
+    color: #f5ede0;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .cover-batch {
+    font-family: 'Amiri', serif;
+    font-size: 3rem;
+    color: #c0365a;
+    margin-bottom: 10px;
+  }
+
+  .cover-uni {
+    font-size: 0.95rem;
+    color: rgba(245,237,224,0.6);
+    letter-spacing: 3px;
+    margin-bottom: 60px;
+  }
+
+  .cover-title {
+    font-family: 'Amiri', serif;
+    font-size: 2.5rem;
+    color: #f5ede0;
+    line-height: 1.4;
+  }
+
+  .cover-subtitle {
+    font-size: 1rem;
+    color: rgba(245,237,224,0.5);
+    letter-spacing: 3px;
+    margin-top: 12px;
+  }
+
+  .cover-corner {
+    position: absolute;
+    width: 80px; height: 80px;
+    border-color: rgba(212,175,55,0.3);
+    border-style: solid;
+  }
+  .cover-corner.tl { top: 30px; right: 30px; border-width: 2px 0 0 2px; }
+  .cover-corner.tr { top: 30px; left: 30px; border-width: 2px 2px 0 0; }
+  .cover-corner.bl { bottom: 30px; right: 30px; border-width: 0 0 2px 2px; }
+  .cover-corner.br { bottom: 30px; left: 30px; border-width: 0 2px 2px 0; }
+
+  /* ===== DEDICATION PAGE ===== */
+  .dedication {
+    background: radial-gradient(ellipse at center, #1e0a14 0%, #0a0306 100%);
+  }
+
+  .dedication-content {
+    text-align: center;
+    padding: 80px 60px;
+  }
+
+  .dedication-icon {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    display: block;
+  }
+
+  .dedication-line-top {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    margin: 0 auto 40px;
+  }
+
+  .dedication-text {
+    font-family: 'Amiri', serif;
+    font-size: 1.6rem;
+    line-height: 2.2;
+    color: #f5ede0;
+    max-width: 550px;
+    margin: 0 auto;
+  }
+
+  .dedication-text em {
+    color: #d4af37;
+    font-style: normal;
+  }
+
+  .dedication-line-bottom {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c0365a, transparent);
+    margin: 40px auto 0;
+  }
+
+  .dedication-from {
+    margin-top: 30px;
+    font-size: 1rem;
+    color: rgba(245,237,224,0.5);
+    letter-spacing: 3px;
+  }
+
+  /* ===== MEMORY PAGE ===== */
+  .memory-page {
+    background: #100508;
+    justify-content: flex-start;
+  }
+
+  .memory-img-wrap {
+    width: 100%;
+    height: 650px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .memory-img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(to bottom, transparent, #100508);
+  }
+
+  .memory-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    filter: saturate(0.85) brightness(0.95);
+  }
+
+  .memory-content {
+    width: 100%;
+    padding: 40px 60px 50px;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .memory-name {
+    font-family: 'Amiri', serif;
+    font-size: 2.2rem;
+    color: #f5ede0;
+    margin-bottom: 16px;
+  }
+
+  .memory-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    margin: 0 auto 20px;
+  }
+
+  .memory-message {
+    font-size: 1.05rem;
+    color: rgba(245,237,224,0.75);
+    line-height: 2;
+    max-width: 500px;
+    font-family: 'Amiri', serif;
+  }
+
+  .page-number {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: rgba(245,237,224,0.25);
+    letter-spacing: 3px;
+  }
+
+  .page-brand {
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    font-size: 0.7rem;
+    color: rgba(212,175,55,0.3);
+    letter-spacing: 2px;
+  }
+
+  /* ===== PRINT STYLES ===== */
+  @media print {
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body { background: #100508; }
+    .screen-ui { display: none !important; }
+    .book { padding-top: 0; max-width: 100%; }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0;
+      page-break-after: always;
+      break-after: page;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="screen-ui">
+  <div class="ui-title">📖 كتاب ذكريات دفعة 29</div>
+  <button class="print-btn" onclick="savePDF()">⬇️ تنزيل PDF</button>
+  <div id="pdf-tip" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px;">
+    <div style="background:#1a0810; border:1px solid rgba(212,175,55,0.3); border-radius:20px; padding:40px; text-align:center; max-width:380px;">
+      <div style="font-size:2.5rem; margin-bottom:16px;">📄</div>
+      <div style="font-family:Amiri,serif; font-size:1.4rem; color:#f5ede0; margin-bottom:10px;">لتنزيل الكتاب كـ PDF</div>
+      <div style="font-size:0.95rem; color:rgba(245,237,224,0.6); line-height:1.8; margin-bottom:24px;">
+        في نافذة الطباعة اللي هتفتح،<br>
+        اختار <strong style="color:#d4af37">"حفظ كـ PDF"</strong> من قائمة الطابعات
+      </div>
+      <button onclick="document.getElementById('pdf-tip').style.display='none'; window.print();" style="padding:12px 32px; background:linear-gradient(135deg,#7a1e3c,#c0365a); color:white; border:none; border-radius:50px; font-family:Tajawal,sans-serif; font-size:1rem; font-weight:700; cursor:pointer; width:100%;">تمام، افتح الطباعة</button>
+      <button onclick="document.getElementById('pdf-tip').style.display='none'" style="margin-top:10px; background:none; border:none; color:rgba(245,237,224,0.4); font-family:Tajawal,sans-serif; cursor:pointer; font-size:0.9rem;">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div id="loading" class="loading">
+  <div class="loading-spinner"></div>
+  جاري تحميل الذكريات...
+</div>
+
+<div class="book" id="book" style="display:none"></div>
+
+<script>
+const SUPABASE_URL = 'https://qryfzlsrjbgbalyxdjhd.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyeWZ6bHNyamJnYmFseXhkamhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MzI4MTMsImV4cCI6MjA5MTUwODgxM30.Ezfy8YQU6Mg6Xx70pDPFNOI2spcSGJU9GOb3q6IMr_s';
+
+function savePDF() {
+  document.getElementById('pdf-tip').style.display = 'flex';
+}
+
+async function loadAndBuild() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/memories?order=created_at.asc`, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+  });
+  const memories = res.ok ? await res.json() : [];
+
+  const book = document.getElementById('book');
+  book.innerHTML = '';
+
+  // ===== COVER =====
+  book.innerHTML += `
+  <div class="page cover">
+    <div class="cover-orb cover-orb1"></div>
+    <div class="cover-orb cover-orb2"></div>
+    <div class="cover-corner tl"></div>
+    <div class="cover-corner tr"></div>
+    <div class="cover-corner bl"></div>
+    <div class="cover-corner br"></div>
+    <div class="cover-content">
+      <div class="cover-year">2026</div>
+      <div class="cover-line"></div>
+      <div class="cover-college">كلية التمريض</div>
+      <div class="cover-batch">دفعة 29</div>
+      <div class="cover-uni">جامعة المنصورة</div>
+      <div class="cover-title">كتاب الذكريات</div>
+      <div class="cover-subtitle">✦ لحظات ستبقى للأبد ✦</div>
+    </div>
+  </div>`;
+
+  // ===== DEDICATION =====
+  book.innerHTML += `
+  <div class="page dedication">
+    <div class="dedication-content">
+      <span class="dedication-icon">🕊️</span>
+      <div class="dedication-line-top"></div>
+      <div class="dedication-text">
+        إلى كل من شاركنا هذه الرحلة،<br>
+        إلى من ضحك معنا في أصعب اللحظات،<br>
+        إلى من كان سنداً في الامتحانات،<br>
+        إلى <em>دفعة 29</em>...<br><br>
+        هذا الكتاب ذاكرتنا التي لن تُنسى
+      </div>
+      <div class="dedication-line-bottom"></div>
+      <div class="dedication-from">كلية التمريض · جامعة المنصورة · 2026</div>
+    </div>
+  </div>`;
+
+  // ===== MEMORY PAGES =====
+  memories.forEach((item, i) => {
+    const name = (item.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const msg  = (item.message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const img  = item.image_url || '';
+
+    book.innerHTML += `
+    <div class="page memory-page">
+      <div class="memory-img-wrap">
+        <img class="memory-img" src="${img}" alt="${name}"
+          onerror="this.parentElement.style.height='200px'">
+      </div>
+      <div class="memory-content">
+        <div class="memory-name">${name}</div>
+        <div class="memory-divider"></div>
+        <div class="memory-message">${msg}</div>
+      </div>
+      <div class="page-number">${i + 1} / ${memories.length}</div>
+      <div class="page-brand">دفعة 29 · كلية التمريض</div>
+    </div>`;
+  });
+
+  document.getElementById('loading').style.display = 'none';
+  book.style.display = 'block';
+}
+
+loadAndBuild();
+</script>
+</body>
+</html>
