@@ -3,455 +3,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>كتاب ذكريات دفعة 29</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+<title>كتاب ذكريات · دفعة 29</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:        #1a1008;
+  --ink-light:  #3d2e1a;
+  --parchment:  #f7f0e3;
+  --parchment2: #efe5cc;
+  --gold:       #9a7a2e;
+  --gold-light: #c9a84c;
+  --gold-pale:  #e8d5a0;
+  --crimson:    #7a1e2e;
+  --crimson-l:  #a02840;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: #2a1f14; font-family: 'Noto Naskh Arabic', 'Amiri', serif; min-height: 100vh; }
 
-  body {
-    font-family: 'Tajawal', sans-serif;
-    background: #1a0810;
-    color: #f5ede0;
-    min-height: 100vh;
-  }
+/* TOOLBAR */
+.toolbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: #1a1008; border-bottom: 1px solid rgba(154,122,46,0.3);
+  padding: 14px 28px; display: flex; align-items: center; justify-content: space-between;
+}
+.toolbar-title { font-family: 'Amiri', serif; font-size: 1.1rem; color: var(--gold-light); letter-spacing: 1px; }
+.dl-btn {
+  display: flex; align-items: center; gap: 8px; padding: 10px 26px;
+  background: var(--crimson); color: var(--parchment); border: none; border-radius: 4px;
+  font-family: 'Noto Naskh Arabic', serif; font-size: 1rem; font-weight: 600;
+  cursor: pointer; letter-spacing: 1px; transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 2px 12px rgba(122,30,46,0.4);
+}
+.dl-btn:hover { background: var(--crimson-l); transform: translateY(-1px); }
 
-  /* ===== SCREEN UI ===== */
-  .screen-ui {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 999;
-    background: rgba(16,5,8,0.95);
-    backdrop-filter: blur(10px);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(212,175,55,0.2);
-  }
+/* BOOK */
+.book-wrap { padding: 80px 20px 60px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
 
-  .ui-title {
-    font-family: 'Amiri', serif;
-    font-size: 1.2rem;
-    color: #d4af37;
-  }
+/* PAGE */
+.page {
+  width: 210mm; min-height: 297mm; position: relative;
+  background: var(--parchment); box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+  display: flex; flex-direction: column; overflow: hidden;
+  page-break-after: always; break-after: page;
+}
+.page::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
 
-  .print-btn {
-    padding: 10px 28px;
-    background: linear-gradient(135deg, #7a1e3c, #c0365a);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(192,54,90,0.4);
-  }
-  .print-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(192,54,90,0.6);
-  }
+/* COVER */
+.cover {
+  background: var(--ink); color: var(--parchment);
+  align-items: center; justify-content: center;
+}
+.cover::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(154,122,46,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(122,30,46,0.15) 0%, transparent 50%);
+}
+.cover-border { position: absolute; inset: 18px; border: 1px solid rgba(154,122,46,0.35); z-index: 2; }
+.cover-border::before { content: ''; position: absolute; inset: 9px; border: 1px solid rgba(154,122,46,0.15); }
 
-  .loading {
-    text-align: center;
-    padding: 120px 20px;
-    font-size: 1.2rem;
-    color: rgba(245,237,224,0.5);
-  }
-  .loading-spinner {
-    width: 50px; height: 50px;
-    border: 3px solid rgba(212,175,55,0.2);
-    border-top-color: #d4af37;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+.cover-corner { position: absolute; width: 56px; height: 56px; z-index: 3; }
+.cover-corner svg { width: 100%; height: 100%; }
+.cover-corner.tl { top: 10px; right: 10px; }
+.cover-corner.tr { top: 10px; left: 10px; transform: scaleX(-1); }
+.cover-corner.bl { bottom: 10px; right: 10px; transform: scaleY(-1); }
+.cover-corner.br { bottom: 10px; left: 10px; transform: scale(-1,-1); }
 
-  /* ===== BOOK PAGES ===== */
-  .book {
-    padding-top: 80px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
+.cover-content {
+  position: relative; z-index: 4; text-align: center;
+  padding: 60px 50px; display: flex; flex-direction: column; align-items: center;
+}
+.cover-top-label { font-size: 0.72rem; letter-spacing: 6px; color: rgba(232,213,160,0.5); margin-bottom: 44px; }
+.cover-ornament { color: var(--gold-light); font-size: 1.3rem; letter-spacing: 14px; opacity: 0.6; margin-bottom: 28px; }
+.cover-rule { width: 160px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto 32px; }
+.cover-main-title { font-family: 'Amiri', serif; font-size: 5rem; font-weight: 700; color: var(--parchment); line-height: 1; margin-bottom: 10px; letter-spacing: 3px; }
+.cover-main-sub { font-family: 'Amiri', serif; font-size: 1.9rem; color: var(--gold-light); margin-bottom: 30px; font-style: italic; }
+.cover-rule2 { width: 70px; height: 2px; background: var(--crimson); margin: 0 auto 32px; opacity: 0.8; }
+.cover-tagline { font-family: 'Amiri', serif; font-size: 1.1rem; color: rgba(232,213,160,0.6); line-height: 2.1; max-width: 340px; margin-bottom: 56px; }
+.cover-dots { color: rgba(154,122,46,0.4); font-size: 1rem; letter-spacing: 8px; margin-bottom: 52px; }
+.cover-footer { border-top: 1px solid rgba(154,122,46,0.2); padding-top: 24px; width: 100%; text-align: center; }
+.cover-batch { font-size: 0.72rem; letter-spacing: 5px; color: rgba(232,213,160,0.4); margin-bottom: 8px; }
+.cover-year { font-family: 'Amiri', serif; font-size: 1.8rem; color: var(--gold); letter-spacing: 5px; }
 
-  .page {
-    width: 100%;
-    min-height: 1122px; /* A4 ratio */
-    position: relative;
-    margin-bottom: 24px;
-    background: #100508;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    page-break-after: always;
-    break-after: page;
-  }
+/* DEDICATION */
+.dedication { background: var(--parchment2); align-items: center; justify-content: center; }
+.ded-border { position: absolute; inset: 24px; border: 1px solid rgba(154,122,46,0.18); pointer-events: none; z-index: 1; }
+.ded-content { text-align: center; padding: 80px 70px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
+.ded-glyph { font-size: 2.2rem; color: var(--gold); opacity: 0.5; margin-bottom: 36px; }
+.ded-rule { width: 90px; height: 1px; background: var(--gold); opacity: 0.35; margin: 0 auto 40px; }
+.ded-text { font-family: 'Amiri', serif; font-size: 1.4rem; line-height: 2.5; color: var(--ink-light); max-width: 460px; }
+.ded-text em { color: var(--crimson); font-style: normal; font-weight: 700; }
+.ded-rule2 { width: 50px; height: 2px; background: var(--crimson); margin: 42px auto 28px; opacity: 0.45; }
+.ded-from { font-size: 0.72rem; color: var(--gold); letter-spacing: 4px; opacity: 0.6; }
 
-  /* ===== COVER PAGE ===== */
-  .cover {
-    background: radial-gradient(ellipse at 30% 20%, #2a0d18 0%, #0a0306 70%);
-    position: relative;
-  }
+/* MEMORY PAGE */
+.mem-page { background: var(--parchment); }
+.mem-corner { position: absolute; width: 28px; height: 28px; z-index: 2; }
+.mem-corner.tl { top: 52px; right: 26px; border-top: 1px solid rgba(154,122,46,0.28); border-right: 1px solid rgba(154,122,46,0.28); }
+.mem-corner.tr { top: 52px; left: 26px; border-top: 1px solid rgba(154,122,46,0.28); border-left: 1px solid rgba(154,122,46,0.28); }
+.mem-corner.bl { bottom: 42px; right: 26px; border-bottom: 1px solid rgba(154,122,46,0.28); border-right: 1px solid rgba(154,122,46,0.28); }
+.mem-corner.br { bottom: 42px; left: 26px; border-bottom: 1px solid rgba(154,122,46,0.28); border-left: 1px solid rgba(154,122,46,0.28); }
 
-  .cover-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-  }
-  .cover-orb1 {
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(122,30,60,0.5) 0%, transparent 70%);
-    top: -100px; right: -100px;
-  }
-  .cover-orb2 {
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
-    bottom: -100px; left: -100px;
-  }
+.running-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 42px 14px; border-bottom: 1px solid rgba(154,122,46,0.18); position: relative; z-index: 2;
+}
+.rh-text { font-size: 0.62rem; letter-spacing: 4px; color: var(--gold); opacity: 0.55; }
+.rh-rule { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(154,122,46,0.18), transparent); margin: 0 16px; }
 
-  .cover-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    padding: 60px 40px;
-  }
+.mem-content {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 50px 80px; position: relative; z-index: 2; text-align: center;
+}
+.mem-bg-num {
+  font-family: 'Amiri', serif; font-size: 9rem; font-weight: 700;
+  color: rgba(154,122,46,0.055); line-height: 1; position: absolute; top: 24px;
+  left: 50%; transform: translateX(-50%); letter-spacing: -4px; user-select: none;
+}
+.mem-star { font-size: 0.9rem; color: var(--gold); letter-spacing: 14px; opacity: 0.45; margin-bottom: 38px; }
+.mem-name { font-family: 'Amiri', serif; font-size: 2.9rem; font-weight: 700; color: var(--ink); line-height: 1.2; margin-bottom: 22px; }
+.mem-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 38px; justify-content: center; }
+.mem-divider-line { height: 1px; width: 56px; background: var(--gold); opacity: 0.38; }
+.mem-divider-dot { width: 6px; height: 6px; background: var(--crimson); transform: rotate(45deg); opacity: 0.55; }
+.mem-message { font-family: 'Amiri', serif; font-size: 1.22rem; line-height: 2.3; color: var(--ink-light); max-width: 430px; font-style: italic; }
 
-  .cover-year {
-    font-family: 'Amiri', serif;
-    font-size: 9rem;
-    font-weight: 700;
-    line-height: 0.85;
-    background: linear-gradient(145deg, #f0d060 0%, #d4af37 40%, #b8960a 80%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 6px;
-    filter: drop-shadow(0 0 30px rgba(212,175,55,0.4));
-    margin-bottom: 30px;
-  }
+.running-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 42px 18px; border-top: 1px solid rgba(154,122,46,0.18); position: relative; z-index: 2;
+}
+.rf-text { font-size: 0.62rem; letter-spacing: 3px; color: var(--gold); opacity: 0.45; }
+.page-num { font-family: 'Amiri', serif; font-size: 0.9rem; color: var(--gold); opacity: 0.55; }
 
-  .cover-line {
-    width: 200px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #d4af37, transparent);
-    margin: 0 auto 30px;
-  }
+/* LOADING */
+.loading-screen {
+  position: fixed; inset: 0; background: #1a1008;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 9999;
+}
+.loading-title { font-family: 'Amiri', serif; font-size: 1.6rem; color: var(--gold-light); }
+.loading-sub { font-size: 0.82rem; color: rgba(232,213,160,0.38); letter-spacing: 3px; }
+.loading-bar-wrap { width: 200px; height: 2px; background: rgba(154,122,46,0.2); border-radius: 2px; overflow: hidden; }
+.loading-bar { height: 100%; background: var(--gold-light); border-radius: 2px; animation: lb 1.8s ease-in-out infinite; }
+@keyframes lb { 0%{width:0%;margin-left:0} 50%{width:60%;margin-left:20%} 100%{width:0%;margin-left:100%} }
 
-  .cover-college {
-    font-size: 1.1rem;
-    font-weight: 300;
-    letter-spacing: 5px;
-    color: #f5ede0;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
+/* MODAL */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; }
+.modal.show { display: flex; }
+.modal-box { background: var(--ink); border: 1px solid rgba(154,122,46,0.3); border-radius: 8px; padding: 44px; text-align: center; max-width: 370px; width: 90%; }
+.modal-icon { font-size: 2.6rem; margin-bottom: 16px; }
+.modal-title { font-family: 'Amiri', serif; font-size: 1.5rem; color: var(--parchment); margin-bottom: 12px; }
+.modal-text { font-size: 0.88rem; color: rgba(232,213,160,0.52); line-height: 1.95; margin-bottom: 28px; }
+.modal-text strong { color: var(--gold-light); }
+.modal-btn { width: 100%; padding: 13px; background: var(--crimson); color: var(--parchment); border: none; border-radius: 4px; font-family: 'Noto Naskh Arabic', serif; font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 10px; letter-spacing: 1px; transition: background 0.2s; }
+.modal-btn:hover { background: var(--crimson-l); }
+.modal-cancel { background: none; border: none; color: rgba(232,213,160,0.28); font-family: 'Noto Naskh Arabic', serif; font-size: 0.85rem; cursor: pointer; transition: color 0.2s; }
+.modal-cancel:hover { color: rgba(232,213,160,0.55); }
 
-  .cover-batch {
-    font-family: 'Amiri', serif;
-    font-size: 3rem;
-    color: #c0365a;
-    margin-bottom: 10px;
-  }
-
-  .cover-uni {
-    font-size: 0.95rem;
-    color: rgba(245,237,224,0.6);
-    letter-spacing: 3px;
-    margin-bottom: 60px;
-  }
-
-  .cover-title {
-    font-family: 'Amiri', serif;
-    font-size: 2.5rem;
-    color: #f5ede0;
-    line-height: 1.4;
-  }
-
-  .cover-subtitle {
-    font-size: 1rem;
-    color: rgba(245,237,224,0.5);
-    letter-spacing: 3px;
-    margin-top: 12px;
-  }
-
-  .cover-corner {
-    position: absolute;
-    width: 80px; height: 80px;
-    border-color: rgba(212,175,55,0.3);
-    border-style: solid;
-  }
-  .cover-corner.tl { top: 30px; right: 30px; border-width: 2px 0 0 2px; }
-  .cover-corner.tr { top: 30px; left: 30px; border-width: 2px 2px 0 0; }
-  .cover-corner.bl { bottom: 30px; right: 30px; border-width: 0 0 2px 2px; }
-  .cover-corner.br { bottom: 30px; left: 30px; border-width: 0 2px 2px 0; }
-
-  /* ===== DEDICATION PAGE ===== */
-  .dedication {
-    background: radial-gradient(ellipse at center, #1e0a14 0%, #0a0306 100%);
-  }
-
-  .dedication-content {
-    text-align: center;
-    padding: 80px 60px;
-  }
-
-  .dedication-icon {
-    font-size: 3rem;
-    margin-bottom: 30px;
-    display: block;
-  }
-
-  .dedication-line-top {
-    width: 120px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #d4af37, transparent);
-    margin: 0 auto 40px;
-  }
-
-  .dedication-text {
-    font-family: 'Amiri', serif;
-    font-size: 1.6rem;
-    line-height: 2.2;
-    color: #f5ede0;
-    max-width: 550px;
-    margin: 0 auto;
-  }
-
-  .dedication-text em {
-    color: #d4af37;
-    font-style: normal;
-  }
-
-  .dedication-line-bottom {
-    width: 120px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #c0365a, transparent);
-    margin: 40px auto 0;
-  }
-
-  .dedication-from {
-    margin-top: 30px;
-    font-size: 1rem;
-    color: rgba(245,237,224,0.5);
-    letter-spacing: 3px;
-  }
-
-  /* ===== MEMORY PAGE ===== */
-  .memory-page {
-    background: #100508;
-    justify-content: flex-start;
-  }
-
-  .memory-img-wrap {
-    width: 100%;
-    height: 650px;
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .memory-img-wrap::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 200px;
-    background: linear-gradient(to bottom, transparent, #100508);
-  }
-
-  .memory-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center top;
-    filter: saturate(0.85) brightness(0.95);
-  }
-
-  .memory-content {
-    width: 100%;
-    padding: 40px 60px 50px;
-    text-align: center;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .memory-name {
-    font-family: 'Amiri', serif;
-    font-size: 2.2rem;
-    color: #f5ede0;
-    margin-bottom: 16px;
-  }
-
-  .memory-divider {
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #d4af37, transparent);
-    margin: 0 auto 20px;
-  }
-
-  .memory-message {
-    font-size: 1.05rem;
-    color: rgba(245,237,224,0.75);
-    line-height: 2;
-    max-width: 500px;
-    font-family: 'Amiri', serif;
-  }
-
-  .page-number {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.75rem;
-    color: rgba(245,237,224,0.25);
-    letter-spacing: 3px;
-  }
-
-  .page-brand {
-    position: absolute;
-    bottom: 20px;
-    left: 30px;
-    font-size: 0.7rem;
-    color: rgba(212,175,55,0.3);
-    letter-spacing: 2px;
-  }
-
-  /* ===== PRINT STYLES ===== */
-  @media print {
-    @page {
-      size: A4;
-      margin: 0;
-    }
-
-    body { background: #100508; }
-    .screen-ui { display: none !important; }
-    .book { padding-top: 0; max-width: 100%; }
-
-    .page {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 0;
-      page-break-after: always;
-      break-after: page;
-    }
-  }
+@media print {
+  @page { size: A4; margin: 0; }
+  .toolbar, .loading-screen, .modal { display: none !important; }
+  body { background: none; }
+  .book-wrap { padding: 0; gap: 0; }
+  .page { width: 210mm; min-height: 297mm; box-shadow: none; margin: 0; page-break-after: always; break-after: page; }
+}
 </style>
 </head>
 <body>
 
-<div class="screen-ui">
-  <div class="ui-title">📖 كتاب ذكريات دفعة 29</div>
-  <button class="print-btn" onclick="savePDF()">⬇️ تنزيل PDF</button>
-  <div id="pdf-tip" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px;">
-    <div style="background:#1a0810; border:1px solid rgba(212,175,55,0.3); border-radius:20px; padding:40px; text-align:center; max-width:380px;">
-      <div style="font-size:2.5rem; margin-bottom:16px;">📄</div>
-      <div style="font-family:Amiri,serif; font-size:1.4rem; color:#f5ede0; margin-bottom:10px;">لتنزيل الكتاب كـ PDF</div>
-      <div style="font-size:0.95rem; color:rgba(245,237,224,0.6); line-height:1.8; margin-bottom:24px;">
-        في نافذة الطباعة اللي هتفتح،<br>
-        اختار <strong style="color:#d4af37">"حفظ كـ PDF"</strong> من قائمة الطابعات
-      </div>
-      <button onclick="document.getElementById('pdf-tip').style.display='none'; window.print();" style="padding:12px 32px; background:linear-gradient(135deg,#7a1e3c,#c0365a); color:white; border:none; border-radius:50px; font-family:Tajawal,sans-serif; font-size:1rem; font-weight:700; cursor:pointer; width:100%;">تمام، افتح الطباعة</button>
-      <button onclick="document.getElementById('pdf-tip').style.display='none'" style="margin-top:10px; background:none; border:none; color:rgba(245,237,224,0.4); font-family:Tajawal,sans-serif; cursor:pointer; font-size:0.9rem;">إلغاء</button>
-    </div>
+<div class="loading-screen" id="loading">
+  <div class="loading-title">كتاب الذكريات</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-sub">جاري تحميل الذكريات...</div>
+</div>
+
+<div class="toolbar">
+  <div class="toolbar-title">📖 كتاب ذكريات · دفعة 29</div>
+  <button class="dl-btn" onclick="document.getElementById('modal').classList.add('show')">⬇ تنزيل PDF</button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-icon">📄</div>
+    <div class="modal-title">تنزيل كتاب PDF</div>
+    <div class="modal-text">في نافذة الطباعة،<br>اختار <strong>"حفظ كـ PDF"</strong> من قائمة الطابعات<br>ثم اضغط حفظ ⬇</div>
+    <button class="modal-btn" onclick="document.getElementById('modal').classList.remove('show'); window.print();">افتح نافذة الحفظ</button>
+    <button class="modal-cancel" onclick="document.getElementById('modal').classList.remove('show')">إلغاء</button>
   </div>
 </div>
 
-<div id="loading" class="loading">
-  <div class="loading-spinner"></div>
-  جاري تحميل الذكريات...
-</div>
-
-<div class="book" id="book" style="display:none"></div>
+<div class="book-wrap" id="book" style="display:none"></div>
 
 <script>
 const SUPABASE_URL = 'https://qryfzlsrjbgbalyxdjhd.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyeWZ6bHNyamJnYmFseXhkamhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MzI4MTMsImV4cCI6MjA5MTUwODgxM30.Ezfy8YQU6Mg6Xx70pDPFNOI2spcSGJU9GOb3q6IMr_s';
 
-function savePDF() {
-  document.getElementById('pdf-tip').style.display = 'flex';
-}
+const cornerSVG = `<svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 2 L2 32 M2 2 L32 2" stroke="rgba(154,122,46,0.45)" stroke-width="1"/>
+  <path d="M9 9 L9 24 M9 9 L24 9" stroke="rgba(154,122,46,0.2)" stroke-width="0.6"/>
+  <circle cx="2" cy="2" r="1.8" fill="rgba(154,122,46,0.55)"/>
+  <circle cx="9" cy="9" r="1.1" fill="rgba(154,122,46,0.3)"/>
+</svg>`;
 
-async function loadAndBuild() {
+async function build() {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/memories?order=created_at.asc`, {
     headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
   });
   const memories = res.ok ? await res.json() : [];
-
   const book = document.getElementById('book');
-  book.innerHTML = '';
 
-  // ===== COVER =====
-  book.innerHTML += `
-  <div class="page cover">
-    <div class="cover-orb cover-orb1"></div>
-    <div class="cover-orb cover-orb2"></div>
-    <div class="cover-corner tl"></div>
-    <div class="cover-corner tr"></div>
-    <div class="cover-corner bl"></div>
-    <div class="cover-corner br"></div>
+  // COVER
+  const cover = document.createElement('div');
+  cover.className = 'page cover';
+  cover.innerHTML = `
+    <div class="cover-border"></div>
+    <div class="cover-corner tl">${cornerSVG}</div>
+    <div class="cover-corner tr">${cornerSVG}</div>
+    <div class="cover-corner bl">${cornerSVG}</div>
+    <div class="cover-corner br">${cornerSVG}</div>
     <div class="cover-content">
-      <div class="cover-year">2026</div>
-      <div class="cover-line"></div>
-      <div class="cover-college">كلية التمريض</div>
-      <div class="cover-batch">دفعة 29</div>
-      <div class="cover-uni">جامعة المنصورة</div>
-      <div class="cover-title">كتاب الذكريات</div>
-      <div class="cover-subtitle">✦ لحظات ستبقى للأبد ✦</div>
-    </div>
-  </div>`;
-
-  // ===== DEDICATION =====
-  book.innerHTML += `
-  <div class="page dedication">
-    <div class="dedication-content">
-      <span class="dedication-icon">🕊️</span>
-      <div class="dedication-line-top"></div>
-      <div class="dedication-text">
-        إلى كل من شاركنا هذه الرحلة،<br>
-        إلى من ضحك معنا في أصعب اللحظات،<br>
-        إلى من كان سنداً في الامتحانات،<br>
-        إلى <em>دفعة 29</em>...<br><br>
-        هذا الكتاب ذاكرتنا التي لن تُنسى
+      <div class="cover-top-label">كلية التمريض · جامعة المنصورة</div>
+      <div class="cover-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+      <div class="cover-rule"></div>
+      <div class="cover-main-title">ذكريات</div>
+      <div class="cover-main-sub">لحظات لن تُنسى</div>
+      <div class="cover-rule2"></div>
+      <div class="cover-tagline">
+        في هذه الصفحات ذكريات جيل كامل،<br>
+        كلمات حُفرت في القلب قبل الورق،<br>
+        وأسماء ستبقى ما بقي الزمن.
       </div>
-      <div class="dedication-line-bottom"></div>
-      <div class="dedication-from">كلية التمريض · جامعة المنصورة · 2026</div>
-    </div>
-  </div>`;
-
-  // ===== MEMORY PAGES =====
-  memories.forEach((item, i) => {
-    const name = (item.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const msg  = (item.message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const img  = item.image_url || '';
-
-    book.innerHTML += `
-    <div class="page memory-page">
-      <div class="memory-img-wrap">
-        <img class="memory-img" src="${img}" alt="${name}"
-          onerror="this.parentElement.style.height='200px'">
+      <div class="cover-dots">· · · · ·</div>
+      <div class="cover-footer">
+        <div class="cover-batch">الدفعة التاسعة والعشرون</div>
+        <div class="cover-year">٢٠٢٦</div>
       </div>
-      <div class="memory-content">
-        <div class="memory-name">${name}</div>
-        <div class="memory-divider"></div>
-        <div class="memory-message">${msg}</div>
-      </div>
-      <div class="page-number">${i + 1} / ${memories.length}</div>
-      <div class="page-brand">دفعة 29 · كلية التمريض</div>
     </div>`;
+  book.appendChild(cover);
+
+  // DEDICATION
+  const ded = document.createElement('div');
+  ded.className = 'page dedication';
+  ded.innerHTML = `
+    <div class="ded-border"></div>
+    <div class="ded-content">
+      <div class="ded-glyph">❦</div>
+      <div class="ded-rule"></div>
+      <div class="ded-text">
+        إلى كل من حمل الكتاب بيد،<br>
+        والأمل بيد أخرى...<br><br>
+        إلى من تعب وصبر ونجح،<br>
+        إلى <em>دفعة 29</em>،<br>
+        أُهدي هذه الكلمات.<br><br>
+        <span style="font-size:1rem; opacity:0.65;">ما كان جميلاً، يستحق أن يُحفظ.</span>
+      </div>
+      <div class="ded-rule2"></div>
+      <div class="ded-from">كلية التمريض · جامعة المنصورة · 2026</div>
+    </div>`;
+  book.appendChild(ded);
+
+  // MEMORY PAGES
+  memories.forEach((item, i) => {
+    const name = (item.name || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const msg  = (item.message || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const num  = String(i + 1).padStart(2, '0');
+
+    const pg = document.createElement('div');
+    pg.className = 'page mem-page';
+    pg.innerHTML = `
+      <div class="mem-corner tl"></div>
+      <div class="mem-corner tr"></div>
+      <div class="mem-corner bl"></div>
+      <div class="mem-corner br"></div>
+      <div class="running-header">
+        <div class="rh-text">دفعة 29 · كلية التمريض</div>
+        <div class="rh-rule"></div>
+        <div class="rh-text">ذكريات لن تُنسى</div>
+      </div>
+      <div class="mem-content">
+        <div class="mem-bg-num">${num}</div>
+        <div class="mem-star">✦</div>
+        <div class="mem-name">${name}</div>
+        <div class="mem-divider">
+          <div class="mem-divider-line"></div>
+          <div class="mem-divider-dot"></div>
+          <div class="mem-divider-line"></div>
+        </div>
+        <div class="mem-message">${msg}</div>
+      </div>
+      <div class="running-footer">
+        <div class="rf-text">جامعة المنصورة · 2026</div>
+        <div class="page-num">${i + 1}</div>
+      </div>`;
+    book.appendChild(pg);
   });
 
   document.getElementById('loading').style.display = 'none';
-  book.style.display = 'block';
+  book.style.display = 'flex';
 }
 
-loadAndBuild();
+build();
 </script>
 </body>
 </html>
